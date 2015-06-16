@@ -129,6 +129,32 @@ public class Trie {
 		return maximumLength;
 	}
 	
+	public String longestEntityContained(String s, int startPos) {
+	/*
+	 * We start at startPos, and iterate until we reach the end of the string
+	 */
+		int maximumLength = -1;
+		String longestEntity = null;
+		
+		for (int i = startPos ; i < s.length() ; i++){
+		/*
+		 * For each substring i, we try check if every combination is contained in the Trie
+		 */
+			for (int j = 0 ; j <= s.length() - i ; j++ ){
+				String combination = s.substring(i, i + j );
+				if (this.contains(combination)){ // If we found a combination, add it to the counting hashmap 
+					if (maximumLength < combination.length()){
+						maximumLength = combination.length();
+						longestEntity = combination;
+					}
+				}
+			}
+			
+		}
+		
+		return longestEntity;
+	}
+	
 	/** Constructs a Trie from the lines of a file*/
 	public Trie(File file) throws IOException {
 		try(BufferedReader in=new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF8"))) {
@@ -159,6 +185,8 @@ public class Trie {
 		for(String test : Arrays.asList("Brooklyn","Dudweiler","Elvis Presley","Juan Pihuave","York")) {
 			System.out.println(test + " is in trie: " + trie.contains(test));
 		}
+		
+		System.out.println(trie.longestEntityContained("I love to see Alan Turing in New York City. ",7));
 		
 	}
 }
