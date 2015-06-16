@@ -57,6 +57,7 @@ public class Trie {
 				return true;
 			}
 			else { // If the last character is in the children, do nothing.
+				children.get(firstCharacter).setIsWord(true);
 				return false;
 			}
 		}
@@ -108,22 +109,24 @@ public class Trie {
 	/*
 	 * We start at startPos, and iterate until we reach the end of the string
 	 */
-		Map<String,Integer> counter = new HashMap<String,Integer>();
+		int maximumLength = -1;
 		
 		for (int i = startPos ; i < s.length() ; i++){
 		/*
 		 * For each substring i, we try check if every combination is contained in the Trie
 		 */
-			for (int j = 0 ; j < s.length() - i ; j++ ){
+			for (int j = 0 ; j <= s.length() - i ; j++ ){
 				String combination = s.substring(i, i + j );
 				if (this.contains(combination)){ // If we found a combination, add it to the counting hashmap 
-					counter.put(combination, combination.length());
+					if (maximumLength < combination.length()){
+						maximumLength = combination.length();
+					}
 				}
 			}
 			
 		}
 		
-		return 0; /* Returns the max in the hashmap */
+		return maximumLength;
 	}
 	
 	/** Constructs a Trie from the lines of a file*/
@@ -153,9 +156,9 @@ public class Trie {
 	public static void main(String[] args) throws IOException {		
 		Trie trie = new Trie(new File("entities.txt"));
 		
-		for(String test : Arrays.asList("Brooklyn","Dudweiler","Elvis Presley","Juan Pihuave")) {
+		for(String test : Arrays.asList("Brooklyn","Dudweiler","Elvis Presley","Juan Pihuave","York")) {
 			System.out.println(test + " is in trie: " + trie.contains(test));
 		}
-
+		
 	}
 }

@@ -13,7 +13,7 @@ public class BaseTests extends TestCase {
 	static {
 		try {
 			dictionary = new Trie(new File("entities.txt"));
-			mentions = EntityRecognizer.findMentions(new File("text"), dictionary);
+			/*mentions = EntityRecognizer.findMentions(new File("text"), dictionary);*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

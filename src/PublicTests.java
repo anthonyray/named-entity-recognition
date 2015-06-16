@@ -14,6 +14,11 @@ public class PublicTests extends BaseTests {
 	}
 	
 	@Test
+	public void testTrieContains2() {
+		assertTrue(dictionary.contains("New York"));
+	}
+	
+	@Test
 	public void testTrieDoesNotContain() {
 		assertFalse(dictionary.contains("Dudweiler"));
 	}
