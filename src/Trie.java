@@ -24,25 +24,41 @@ public class Trie {
 	 * @return true if the trie changed as a result of this operation, that is if
 	 * the new string was not in the dictionary.
 	 */
+	
+	public boolean setIsWord(boolean isword){
+		isWord = isword;
+		return isWord;
+	}
+	
+	public char setLetter(char letter){
+		this.letter = letter;
+		return letter;
+	}
+	
 	public boolean add(String str) {
 		char firstCharacter = str.charAt(0); // Retrieves the first character of the string
 		int strSize = str.length();
 		
 		if (strSize > 1){ // If there are remaining characters
-			if (children.get(firstCharacter) != null){ // If there is a children, call the add method on the child, with the substring 
-				children.get(firstCharacter).add(s.substring(1));
-			}
-			else { // If there is no child
+			if (children.get(firstCharacter) == null){ // If there is a children, call the add method on the child, with the substring 
 				Trie child = new Trie();
-				child.setLetter(firstChar);
-				addChild(firstCharIndex,child);
-			}
-			
-			children[firstCharIndex].add(str.substring(1));
+				child.setLetter(firstCharacter);
+				addChild(firstCharacter,child);
+			}			
+			return children.get(firstCharacter).add(str.substring(1));
 			
 		}
-		else { // 
-			if 
+		else { // There is one character left, 
+			if (children.get(firstCharacter) == null){ // if it's not in the children, add it and set last trie isWord to True
+				Trie lastChild = new Trie();
+				lastChild.setLetter(firstCharacter);
+				lastChild.setIsWord(true);
+				addChild(firstCharacter,lastChild);
+				return true;
+			}
+			else { // If the last character is in the children, do nothing.
+				return false;
+			}
 		}
 	}
 	
@@ -57,7 +73,25 @@ public class Trie {
 	 * @return true if the string is in the trie, false otherwise. 
 	 */
 	public boolean contains(String str) {
-		throw new UnsupportedOperationException("The method Trie.contains has not been implemented.");		
+		if (str.length() > 0){
+			char firstCharacter = str.charAt(0);
+			if (children.get(firstCharacter) != null){
+				return children.get(firstCharacter).contains(str.substring(1));
+			}
+			else {
+				return false;
+			}
+			
+		}
+		else {
+			if (isWord){
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		
 	}
 	
 	/**
@@ -71,7 +105,25 @@ public class Trie {
 	 * @return int
 	 */
 	public int containedLength(String s, int startPos) {
-		throw new UnsupportedOperationException("The method Trie.containedLength has not been implemented.");
+	/*
+	 * We start at startPos, and iterate until we reach the end of the string
+	 */
+		Map<String,Integer> counter = new HashMap<String,Integer>();
+		
+		for (int i = startPos ; i < s.length() ; i++){
+		/*
+		 * For each substring i, we try check if every combination is contained in the Trie
+		 */
+			for (int j = 0 ; j < s.length() - i ; j++ ){
+				String combination = s.substring(i, i + j );
+				if (this.contains(combination)){ // If we found a combination, add it to the counting hashmap 
+					counter.put(combination, combination.length());
+				}
+			}
+			
+		}
+		
+		return 0; /* Returns the max in the hashmap */
 	}
 	
 	/** Constructs a Trie from the lines of a file*/
@@ -86,9 +138,9 @@ public class Trie {
 	
 	/** Constructs an empty Trie*/
 	public Trie() {
-		this.letter = (Character) null;
+		this.letter = '\0';
 		this.isWord = false;
-		this.children = new Trie[26];
+		this.children = new HashMap<Character,Trie>();
 		
 	}
 
@@ -99,7 +151,7 @@ public class Trie {
 	
 	/** Use this to test your implementation. Provide the file with list of Wikipedia titles as argument to this program.*/ 
 	public static void main(String[] args) throws IOException {		
-		Trie trie = new Trie(new File(args[0]));
+		Trie trie = new Trie(new File("entities.txt"));
 		
 		for(String test : Arrays.asList("Brooklyn","Dudweiler","Elvis Presley","Juan Pihuave")) {
 			System.out.println(test + " is in trie: " + trie.contains(test));
