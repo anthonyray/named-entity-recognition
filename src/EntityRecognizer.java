@@ -21,8 +21,7 @@ public class EntityRecognizer {
 		/*
 		 * 1. Parse the Wikipedia corpus : Ok ! 
 		 * 2. For each article, scan the content of the article for entities.
-		 * 	2.1 Split the content of the article in sentences, to limit the scope of an entity scanning to a sentence.
-		 * 	2.2 For each entity encountered, instantiate a mention object and add it to the list of mentions
+		 * 	
 		 */
 		
 		Parser wikiParser = new Parser(wikipediaCorpus);  
@@ -32,12 +31,18 @@ public class EntityRecognizer {
 			Page article = wikiParser.next();  // Retrieves the current article
 			String content = article.content;
 			String title = article.title;
-			
-			StringTokenizer sentence = new StringTokenizer(content, ".\t");
-			while (sentence.hasMoreTokens()){
-				String str = sentence.nextToken();
-				System.out.println(str);
-				addNextMention(str,dictionary);
+		
+			int cpt = 0; 
+			while (cpt < content.length()){
+				int entityLength = dictionary.containedLength(content, cpt);
+				if (entityLength > 0){
+					String entity = content.substring(cpt,cpt+entityLength);
+					Mention mention = new Mention(title,entity);
+					mentions.add(mention);
+					
+					cpt += entityLength; // We skip the entity  
+				}
+				cpt++;
 			}
 
 		}
@@ -47,17 +52,6 @@ public class EntityRecognizer {
 		return mentions;
 	}
 	
-	public static void addNextMention(String str, Trie dictionary){
-		System.out.println(str);
-		String entity = dictionary.longestEntityContained(str,0); // Initialisation
-		if (entity != null){ // We found an entity
-			// Let's remove the entity from the sequence
-			int idx = str.indexOf(entity);
-			addNextMention(str.substring(0, idx),dictionary);
-			addNextMention(str.substring(idx + entity.length(),str.length()-1),dictionary);
-		}
-	}
-
 	public static void main(String args[]) throws IOException {
 		/*Trie dictionary = new Trie(new File(args[1]));
 		
@@ -65,11 +59,11 @@ public class EntityRecognizer {
 			System.out.println(mention);
 		} */	
 		Trie dictionary = new Trie(new File("entities.txt"));
-		findMentions(new File("text"), dictionary);
 		
-		/*for (Mention mention : findMentions(new File("text"), dictionary)) {
+		
+		for (Mention mention : findMentions(new File("text"), dictionary)) {
 			System.out.println(mention);
-		}*/
+		}
 		
 	}
 }
